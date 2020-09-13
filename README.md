@@ -11,10 +11,10 @@
 
 Once installed run the below command to setup the aks and the kong and a demo app
 
-git clone https://github.com/Sam123ben/devops.git
-cd devops
-make login
-make provision-aks
+    git clone https://github.com/Sam123ben/devops.git
+    cd devops
+    make login
+    make provision-aks
 
 ## Outcomes of the above
 The above commands will create the following below:
@@ -40,3 +40,8 @@ Once all the above are created and are deployed we can access the sample app usi
 2. terraform (Used for automating the infrastructure)
 3. scripts (simple bash script to trigger the terraform and kubectl commands)
 4. value (A value file where all the proeprties and related values are maintained which will be used by the end users to create the infra)
+
+## Delete the resources:
+    cd devops
+    make login
+    make delete-all
