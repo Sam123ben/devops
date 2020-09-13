@@ -28,7 +28,7 @@ The above commands will create the following below:
 
 Once all the above are created and are deployed we can access the sample app using the host:
 
-# http://<ingress-ip>/
+http://get-the-ingress-ip/
 
 ## Directory Structure as explained:
 
