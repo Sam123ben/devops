@@ -9,7 +9,7 @@
 5. make (brew install make) [install brew in case not installed: https://brew.sh]
 6. You can use a service principal with Owner/Contributor role or you can login as yourself if you have the access to create aks and network
 
-# NOTE (Shold Not Be Missed): Please do ensure the user update the variables.yaml file under values dir to fit your requirements before running any commands related to infra automation
+#### NOTE (Shold Not Be Missed): Please do ensure the user update the variables.yaml file under values dir to fit your requirements before running any commands related to infra automation
 
 Once installed run the below command to setup the aks and the kong and a demo app
 
