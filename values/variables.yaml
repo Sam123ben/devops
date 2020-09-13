@@ -1,32 +1,32 @@
-name: samyak ### CHANGE IT AS EPR YOUR PREFERENCE
+name: samyak ### CHANGE IT AS PER YOUR PREFERENCE
 
-rgname: samyak-training ### CHANGE IT AS EPR YOUR PREFERENCE
+rgname: samyak-training ### CHANGE IT AS PER YOUR PREFERENCE
 
 subscription:
-  id: "******-******-******" ### CHANGE IT AS EPR YOUR PREFERENCE
-  name: "Samyak Personal Subscription" ### CHANGE IT AS EPR YOUR PREFERENCE
+  id: "******-******-******" ### CHANGE IT AS PER YOUR PREFERENCE
+  name: "Samyak Personal Subscription" ### CHANGE IT AS PER YOUR PREFERENCE
 
 vnet:
-  cidr: 172.22.0.0/18 ### CHANGE IT AS EPR YOUR PREFERENCE
-  subnet: 172.22.0.0/20 ### CHANGE IT AS EPR YOUR PREFERENCE
+  cidr: 172.22.0.0/18 ### CHANGE IT AS PER YOUR PREFERENCE
+  subnet: 172.22.0.0/20 ### CHANGE IT AS PER YOUR PREFERENCE
 
-letsencrypt_type: prod ### CHANGE IT AS EPR YOUR PREFERENCE
+letsencrypt_type: prod ### CHANGE IT AS PER YOUR PREFERENCE
 
-location: australiaeast ### CHANGE IT AS EPR YOUR PREFERENCE
+location: australiaeast ### CHANGE IT AS PER YOUR PREFERENCE
 
 account:
-  private: 'false' ### CHANGE IT AS EPR YOUR PREFERENCE
+  private: 'false' ### CHANGE IT AS PER YOUR PREFERENCE
 
 nodes:
-  timeZone: "AUS Eastern Standard Time" ### CHANGE IT AS EPR YOUR PREFERENCE
+  timeZone: "AUS Eastern Standard Time" ### CHANGE IT AS PER YOUR PREFERENCE
   linux:
-    maxpods: 110 ### CHANGE IT AS EPR YOUR PREFERENCE
-    identity: SystemAssigned ### CHANGE IT AS EPR YOUR PREFERENCE
-    number: 1 ### CHANGE IT AS EPR YOUR PREFERENCE
-    username: "devopsuser" ### CHANGE IT AS EPR YOUR PREFERENCE
+    maxpods: 110 ### CHANGE IT AS PER YOUR PREFERENCE
+    identity: SystemAssigned ### CHANGE IT AS PER YOUR PREFERENCE
+    number: 1 ### CHANGE IT AS PER YOUR PREFERENCE
+    username: "devopsuser" ### CHANGE IT AS PER YOUR PREFERENCE
     asg:
-      minsize: 1 ### CHANGE IT AS EPR YOUR PREFERENCE
-      maxsize: 3 ### CHANGE IT AS EPR YOUR PREFERENCE
-    vmsize: "Standard_D2s_v3" ### CHANGE IT AS EPR YOUR PREFERENCE
+      minsize: 1 ### CHANGE IT AS PER YOUR PREFERENCE
+      maxsize: 3 ### CHANGE IT AS PER YOUR PREFERENCE
+    vmsize: "Standard_D2s_v3" ### CHANGE IT AS PER YOUR PREFERENCE
     volumes:
-      root: 60 ### CHANGE IT AS EPR YOUR PREFERENCE
+      root: 60 ### CHANGE IT AS PER YOUR PREFERENCE
