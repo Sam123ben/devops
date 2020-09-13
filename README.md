@@ -28,10 +28,11 @@ The above commands will create the following below:
 
 Once all the above are created and are deployed we can access the sample app using the host:
 
-ingressIp=$(kubectl get ingress -n dev --namespace dev -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}')
-curl -i -H "Host: *" $ingressIp
+    ingressIp=$(kubectl get ingress -n dev --namespace dev -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}')
+    
+    curl -i -H "Host: *" $ingressIp
 
-On the browser you can access the same via http://$ingressIp
+    On the browser you can access the same via http://$ingressIp
 
 ## Directory Structure as explained:
 
