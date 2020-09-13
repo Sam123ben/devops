@@ -1,0 +1,59 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars_files:
+    - "../../values/variables.yaml"
+    - vars/all.yml
+
+  tasks:
+
+    - set_fact:
+        terraform_path: "../../terraform"
+
+    ### Creating the RESOURCES WITH A MULTI SUBNET INFRA ON AZURE
+
+    - name: Enable the az cli for preview mode
+      command: '{{ item }}'
+      with_items:
+        - az extension add --name aks-preview
+        - az extension update --name aks-preview
+        - az feature register --namespace Microsoft.ContainerService --name AKS-AzurePolicyAutoApprove
+        - az feature list --namespace Microsoft.ContainerService -o table
+        - az feature register --name AKSPrivateLinkPreview --namespace Microsoft.ContainerService
+        - az feature list -o table --query "[?contains(name, 'Microsoft.ContainerService/AKSPrivateLinkPreview')].{Name:name,State:properties.state}"
+        - az feature register --name MultiAgentpoolPreview --namespace Microsoft.ContainerService
+        - az feature register --name VMSSPreview --namespace Microsoft.ContainerService
+        - az feature register -n MultiAgentpoolPreview --namespace Microsoft.ContainerService
+        - az feature register --name WindowsPreview --namespace Microsoft.ContainerService
+        - az feature register --namespace "Microsoft.ContainerService" --name "AKSAzureStandardLoadBalancer"
+        - az feature register --namespace "Microsoft.ContainerService" --name "AvailabilityZonePreview"
+        - az provider register --namespace Microsoft.Network
+        - az feature register -n APIServerSecurityPreview --namespace Microsoft.ContainerService
+        - az feature register --name PodSecurityPolicyPreview --namespace Microsoft.ContainerService
+        - az provider register --namespace Microsoft.ContainerService
+
+    - name: AKS Vnet  | Creating the aks tf dir for storing the state of the aks {{ version }} cluster
+      file:
+        path: '{{ platform_folder }}/{{ location }}/{{ item }}'
+        state: directory
+        recurse: yes
+      register: all_tempdir
+      with_items:
+        - aks/vnet
+        - aks/subnet
+
+    - name: AKS Vnet  | Generate the terraform template for the aks vnet task for cluster
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: templates/aks-vnet.tf.j2, dest: '{{ platform_folder }}/{{ location }}/aks/vnet/main.tf' }
+
+    - name: AKS Vnet  | Generate the terraform template for the aks subdomain creation task for cluster
+      template:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: templates/aks-subnet.tf.j2, dest: '{{ platform_folder }}/{{ location }}/aks/subnet/main.tf' }

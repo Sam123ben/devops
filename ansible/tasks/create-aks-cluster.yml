@@ -1,0 +1,53 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars_files:
+    - "../../values/variables.yaml"
+    - vars/all.yml
+
+  tasks:
+
+    ### Creating the AKS RESOURCES WITH A MULTI SUBNET INFRA ON AZURE
+    - name: AKS Cluster | Check if the aks cluster already present
+      shell: az aks list -g {{ rgname }}-{{ location }} | grep {{ rgname }}-{{ location }}
+      register: check_aks_cluster
+      ignore_errors: yes
+      no_log: true
+
+    - set_fact:
+        check_cluster: "{{ check_aks_cluster.stdout }}"
+
+    - debug:
+        msg={{ check_cluster }}
+
+    - block:
+
+        - name: AKS Cluster | Fetch the vnet subnet id under which the aks cluster should be created
+          command: az network vnet subnet show -g {{ rgname }} -n AKS-Subnet --vnet-name {{ name }} --query id
+          register: pvt_subnet_id
+
+        - set_fact:
+            eks_subnet: "{{ pvt_subnet_id.stdout }}"
+
+        - name: AKS Cluster | Create the new secret for the aks and get the password of {{ rgname }}{{ location }}AppId
+          command: az ad sp create-for-rbac --name "{{ rgname }}{{ location }}AppId" --scopes {{ eks_subnet }} --years 7979 --query 'password' -o tsv
+          register: client_secret
+
+        - name: AKS Cluster | Get the client id of the {{ rgname }}{{ location }}AppId
+          command: az ad sp list --display-name "{{ rgname }}{{ location }}AppId" --query '[0].appId' -o tsv
+          register: client_id
+
+        - name: AKS Cluster | Get the object id of the {{ rgname }}{{ location }}AppId
+          command: az ad sp list --display-name "{{ rgname }}{{ location }}AppId" --query '[0].appId' -o tsv
+          register: object_id
+
+        - name: AKS Cluster | Generate the terraform template for the aks cluster resource
+          template:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+          with_items:
+            - { src: templates/aks-resource.tf.j2, dest: '{{ platform_folder }}/{{ location }}/akscluster/main.tf' }
+
+      when: check_cluster == ""

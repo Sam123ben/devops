@@ -1,0 +1,21 @@
+function parse_yaml() {
+    ./scripts/lib/parse_yaml.py -f $1
+}
+
+function yaml2bash() {
+    yaml_file=$1
+    shift
+    ./scripts/lib/yaml2bash.py -f $yaml_file -k "$@"
+}
+
+function yaml2bash_check() {
+    yaml_file=$1
+    shift
+    ./scripts/lib/yaml2bash.py -c -f $yaml_file -k "$@"
+}
+
+
+function usage {
+    echo >&2 ${1-"Usage: ./$0 <path to the environment folder>"}
+    exit 2
+}

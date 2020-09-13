@@ -1,0 +1,14 @@
+k8sversion: '1.17.9'
+istio_version: 1.2.2
+
+# Kubernetes
+network_docker_bridge_cidr: "172.17.0.1/16"
+network_dns_service_ip: "10.0.0.10"
+network_service_cidr: "10.0.0.0/16"
+
+
+# Common Vnet
+hub_vnet_cidr: "10.0.0.0/20"
+hub_firewall_subnet_cidr: "10.0.15.0/24"
+hub_vpn_subnet_cidr: "10.0.13.224/27"
+hub_jumphost_subnet_cidr: "10.0.14.0/24"

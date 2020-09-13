@@ -1,0 +1,119 @@
+# Creating a resource group for the aks cluster
+
+  terraform {
+    required_version = ">= 0.12"
+  }
+
+  provider "azurerm" {
+    version = "~>2.5" //outbound_type https://github.com/terraform-providers/terraform-provider-azurerm/blob/v2.5.0/CHANGELOG.md
+    features {}
+  }
+
+  data "azurerm_virtual_network" "vnet" {
+    name                = "{{ name }}"
+    resource_group_name = "{{ rgname }}"
+  }
+
+  data "azurerm_subnet" "subnet" {
+    name                 = "AKS-Subnet"
+    virtual_network_name = "{{ name }}"
+    resource_group_name  = "{{ rgname }}"
+  }
+
+  ## Private key for the kubernetes cluster ##
+  resource "tls_private_key" "key" {
+    algorithm   = "RSA"
+  }
+
+  ## Save the private key in the local workspace ##
+  resource "null_resource" "save-key" {
+    triggers = {
+      key = tls_private_key.key.private_key_pem
+    }
+
+    provisioner "local-exec" {
+      command = <<EOF
+        echo "${tls_private_key.key.private_key_pem}" > {{ platform_folder }}/{{ location }}/ssh_keys/internal.pem.pub
+        chmod 0600 {{ platform_folder }}/{{ location }}/ssh_keys/internal.pem.pub
+        sleep 10s
+  EOF
+    }
+  }
+
+  resource "azurerm_kubernetes_cluster" "k8s" {
+    name                    = "{{ name }}-{{ location }}-aks"
+    location                = "{{ location }}"
+    resource_group_name     = "{{ rgname }}"
+    kubernetes_version      = "{{ version }}"
+    dns_prefix              = "{{ name }}aks"
+    private_cluster_enabled = {{ account.private }}
+
+    network_profile {
+      docker_bridge_cidr = "{{ network_docker_bridge_cidr }}"
+      dns_service_ip     = "{{ network_dns_service_ip }}"
+      network_plugin     = "azure"
+      network_policy     = "calico"
+      load_balancer_sku  = "standard"
+      # outbound_type    = "userDefinedRouting"
+      service_cidr       = "{{ network_service_cidr }}"
+    }
+
+    role_based_access_control {
+      enabled           = true
+    }
+
+    service_principal {
+      client_id     = "{{ client_id.stdout }}"
+      client_secret = "{{ client_secret.stdout }}"
+    }
+
+    linux_profile {
+      admin_username = "{{ nodes.linux.username }}"
+
+      ## SSH key is generated using "tls_private_key" resource
+      ssh_key {
+        key_data = "${trimspace(tls_private_key.key.public_key_openssh)} {{ name }}@gmail.com"
+      }
+    }
+
+    default_node_pool {
+      name                  = "linux01"
+      # availability_zones  = ["1", "2", "3"]
+      max_pods              = {{ nodes.linux.maxpods }}
+      node_count            = "{{ nodes.linux.asg.minsize }}"
+      min_count             = "{{ nodes.linux.asg.minsize }}"
+      max_count             = "{{ nodes.linux.asg.maxsize }}"
+      enable_auto_scaling   = true
+      vm_size               = "{{ nodes.linux.vmsize }}"
+      os_disk_size_gb       = 60
+      vnet_subnet_id        = data.azurerm_subnet.subnet.id
+    }
+
+    addon_profile {
+      aci_connector_linux {
+        enabled = false
+        # subnet_name = "AKS-Subnet"
+      }
+
+      azure_policy {
+        enabled = true
+      }
+
+      http_application_routing {
+        enabled = false
+      }
+
+      kube_dashboard {
+        enabled = true
+      }
+
+      oms_agent {
+        enabled = false
+      }
+    }
+
+    tags = {
+        Owner = "{{ name }}"
+        AksType = "training"
+    }
+  }
