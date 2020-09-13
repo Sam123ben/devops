@@ -6,6 +6,9 @@ echo -e "\n########################################################\n"
 echo -e "#### EXECUTING THE PLATFORM RESOURCES DELETION TASK ####\n"
 echo -e "##########################################################\n"
 
+platformPath="../../terraform"
+scriptPath="./terraform"
+
 # include parse_yaml function
 . scripts/lib/parse_yaml.sh
 
@@ -14,9 +17,6 @@ DR_ENABLE=$2
 PROD_ENABLE=$3
 
 export ANSIBLE_CONFIG="./ansible.cfg"
-cd ${PLATFORM_FOLDER}
-platform_path=$(pwd)
-cd -
 
 eval $(parse_yaml values/variables.yaml "config_")
 eval $(parse_yaml ./ansible/tasks/vars/all.yml "all_")
